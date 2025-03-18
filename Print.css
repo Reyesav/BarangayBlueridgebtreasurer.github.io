@@ -1,0 +1,31 @@
+body * {
+    display: none; /* Hide everything by default */
+}
+
+#receiptPopup, #receiptPopup * {
+    display: block; /* Show the receipt popup and its contents */
+}
+
+#receiptContent {
+    text-align: center; /* Center align the receipt content */
+}
+
+#receiptContent img {
+    max-width: 100px; /* Set a max width for the logo */
+    margin: 0 auto 10px; /* Center the logo and add space below */
+    display: block; /* Ensure the logo is displayed as a block element */
+}
+
+#receiptContent h3 {
+    margin-top: 0; /* Remove the top margin from the heading */
+}
+
+button {
+    display: none; /* Hide buttons when printing */
+}
+
+@media print {
+    button {
+        display: none; /* Hide buttons when printing */
+    }
+}

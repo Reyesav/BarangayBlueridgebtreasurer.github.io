@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Blue Ridge B - Dashboard</title>
+    <link rel="stylesheet" href="receipt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="top-bar" id="top-bar">
+        <div class="menu-icon" onclick="toggleSidebar()">&#9776;</div> <!-- Menu icon -->
+        <h2>Receipts</h2>
+    </div>
+    <div class="sidebar hidden" id="sidebar"> <!-- Added hidden class here -->
+        <div class="sidebar-top-bar">
+            <img src="Lbrb.png" alt="Logo" class="logo">
+            <h2>Barangay Records</h2>
+        </div>
+        <ul>
+            <li><a href="Home2.html" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/ios-filled/50/ffffff/home.png" alt="Home">Home</a></li>
+            <li><a href="Messages2.html" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/?size=100&id=12623&format=png&color=FFFFFF" alt="Message">Message</a></li>
+            <li><a href="Reservation2.html" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/ios-filled/50/ffffff/warehouse.png" alt="Reservation">Reservation</a></li>
+            <li><a href="#" onclick="showPaymentPopup()" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/ios-filled/50/ffffff/money.png" alt="Payments">Payments</a></li>
+            <li><a href="Receipt.html" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/?size=100&id=86608&format=png&color=FFFFFF" alt="Receipts">Receipts</a></li>
+            <li><a href="index.html" style="text-decoration: none; display: flex; align-items: center;"><img src="https://img.icons8.com/ios-filled/50/ffffff/logout-rounded.png" alt="Log Out">Logout</a></li>
+        </ul>
+    </div>
+
+    <div id="main-content" class="main-content"> <!-- Added main-content here -->
+        <div class="receipt-list">
+            <h1>Receipt List</h1>
+            <ul id="receiptList">
+                <!-- Receipt items will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
+
+    <div id="receiptPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeReceipt()">&times;</span>
+            <div id="receiptContent"></div>
+            <div class="hidebutton-icon" onclick="toggleButtons()">&#9776;</div>
+            <button class="print-btn" onclick="printReceipt()">Print</button>
+        </div>
+    </div>
+    
+    <script>
+        const receipts = JSON.parse(localStorage.getItem('receipts')) || [];
+
+        function showReceipt(details) {
+            document.getElementById('receiptContent').innerHTML = `
+                <img src="Lbrb.png" alt="Barangay Logo">
+                <h3>Barangay Blue Ridge B</h3>
+                <h3>Reservation Receipt</h3>
+                <p>${details.replace(/\n/g, '<br>')}</p>
+            `;
+            document.getElementById('receiptPopup').style.display = 'block';
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptPopup').style.display = 'none';
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        function toggleButtons() {
+            const closeBtn = document.querySelector('.close-btn');
+            const printBtn = document.querySelector('.print-btn');
+            const isHidden = closeBtn.style.display === 'none';
+            closeBtn.style.display = isHidden ? 'block' : 'none';
+            printBtn.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function toggleSidebar() {
+            var sidebar = document.getElementById("sidebar");
+            var mainContent = document.getElementById("main-content");
+            var topBar = document.getElementById("top-bar");
+            if (sidebar.classList.contains("hidden")) {
+                sidebar.classList.remove("hidden");
+                mainContent.style.marginLeft = "270px";
+                topBar.style.marginLeft = "270px";
+            } else {
+                sidebar.classList.add("hidden");
+                mainContent.style.marginLeft = "0";
+                topBar.style.marginLeft = "0";
+            }
+        }
+
+        function populateReceiptList() {
+            const receiptList = document.getElementById('receiptList');
+            receipts.forEach(receipt => {
+                const li = document.createElement('li');
+                li.textContent = receipt.name;
+                li.onclick = () => showReceipt(receipt.details);
+                receiptList.appendChild(li);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarLinks = document.querySelectorAll(".sidebar ul li");
+
+            sidebarLinks.forEach((link) => {
+                link.addEventListener("click", function () {
+                    sidebarLinks.forEach((item) => item.classList.remove("active"));
+                    this.classList.add("active");
+                });
+            });
+
+            const paymentDetails = localStorage.getItem('paymentDetails');
+            if (paymentDetails) {
+                const details = paymentDetails.split('\n');
+                const name = details[1].split(': ')[1];
+                const receipt = { name, details: paymentDetails };
+                receipts.push(receipt);
+                localStorage.setItem('receipts', JSON.stringify(receipts));
+                localStorage.removeItem('paymentDetails');
+            }
+
+            populateReceiptList();
+        });
+    </script>
+</body>
+</html>
